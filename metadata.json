@@ -1,0 +1,8 @@
+{
+  "name": "UnNest:Red",
+  "description": "High-performance directory flattener and archive packer with zero-knowledge architecture.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

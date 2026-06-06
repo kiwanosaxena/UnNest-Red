@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">UnNest:Red</string>
+    <string name="support_email">avikashal@gmail.com</string>
+    <string name="corporate_label">A Product of Avika Labs</string>
+    <string name="landing_page_url">https://avikalabs.com/unnest</string>
+    <string name="privacy_policy_url">https://avikalabs.com/unnest-privacy</string>
+    
+    <!-- UI Labels and Content -->
+    <string name="app_version">Version 1.3.0</string>
+    <string name="engineering_support">Contact Development Support</string>
+    <string name="view_privacy_policy">View Privacy Policy</string>
+    <string name="heading_unnest_hub">UnNest:Red Hub</string>
+    <string name="btn_process">Process</string>
+    <string name="btn_new_session">New Session</string>
+    <string name="btn_exit">Exit</string>
+    <string name="status_success">Success!</string>
+    <string name="status_analyzing">Analyzing…</string>
+    <string name="status_extracting">Extracting…</string>
+</resources>

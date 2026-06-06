@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Background folder body layout with Crimson Red highlight fill -->
+    <path
+        android:fillColor="#C52F24"
+        android:pathData="M24,34h40V44h18V74H24z" />
+    
+    <!-- Rugged Charcoal borders framing the folder -->
+    <path
+        android:strokeColor="#252320"
+        android:strokeWidth="3.5"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round"
+        android:pathData="M24,38 L42,38 L48,32 L82,32 L82,44 L84,44 L84,74 L24,74 Z" />
+        
+    <!-- Flattened paper lines in dark ink charcoal -->
+    <path
+        android:strokeColor="#252320"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M34,48 L72,48" />
+    <path
+        android:strokeColor="#252320"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M34,56 L72,56" />
+        
+    <!-- UnNest highlight node drawn in Red Wax ink -->
+    <path
+        android:strokeColor="#C53F3F"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M34,64 L54,64" />
+</vector>
