@@ -2,11 +2,10 @@
     <string name="app_name">UnNest:Red</string>
     <string name="support_email">avikashal@gmail.com</string>
     <string name="corporate_label">A Product of Avika Labs</string>
-    <string name="landing_page_url">https://avikalabs.com/unnest</string>
-    <string name="privacy_policy_url">https://avikalabs.com/unnest-privacy</string>
+    <string name="landing_page_url">https://kiwanosaxena.github.io/UnNest-Red/</string>
+    <string name="privacy_policy_url">https://kiwanosaxena.github.io/UnNest-Red/privacy-policy.html</string>
     
     <!-- UI Labels and Content -->
-    <string name="app_version">Version 1.3.0</string>
     <string name="engineering_support">Contact Development Support</string>
     <string name="view_privacy_policy">View Privacy Policy</string>
     <string name="heading_unnest_hub">UnNest:Red Hub</string>
@@ -16,4 +15,80 @@
     <string name="status_success">Success!</string>
     <string name="status_analyzing">Analyzing…</string>
     <string name="status_extracting">Extracting…</string>
+
+    <string name="title_directory_flattener">Directory Flattener</string>
+    <string name="subtitle_nested_file_archive">NESTED FILE ARCHIVE UNIFICATION</string>
+    <string name="label_unnest_folder">UNNEST</string>
+    <string name="subtitle_hub_flatten">Flatten folder tree layouts easily</string>
+    <string name="btn_select_source">Select Source</string>
+    <string name="btn_select_destination">Select Destination</string>
+    <string name="status_none_selected">None Selected</string>
+    <string name="mode_plain_copy">Plain Copy &amp; Flatten</string>
+    <string name="mode_compress_zip">Compress to .ZIP</string>
+    <string name="btn_analyze_folder_structure">Analyze Folder Structure</string>
+    <string name="status_analyzing_files">Analyzing Files...</string>
+    <string name="section_specifications">SPECIFICATIONS &amp; LEGAL DECLARATIONS</string>
+    <string name="label_build_version">App Architecture Build Version</string>
+    <string name="label_corporate_publishing">Corporate Entity Publishing</string>
+    
+    <string name="title_privacy">Privacy</string>
+    <string name="privacy_body">UnNest works entirely on your device. It does not collect, store, or share any personal data, and it has no internet access. The app only reads the folder you choose as source and writes to the folder you choose as destination. Files are copied, never deleted or modified. Contact: avikashal@gmail.com</string>
+    <string name="btn_close">Close</string>
+    <string name="btn_full_privacy_policy">Full privacy policy</string>
+
+    <string name="title_massive_files">Massive Files Detected</string>
+    <string name="desc_massive_files">UnNest identified %1$d heavily pre-compressed media items. To safeguard your device\'s battery life and accelerate processing, these items will be packaged using the high-speed \'Smart Filtering Store\' method without redundant re-compression math.</string>
+    <string name="btn_proceed">Proceed</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <string name="stats_analysis_header">Analysis: %1$d Files | %2$s | %3$d Depth</string>
+    <string name="status_analyzing_hierarchy">Analyzing Folder Hierarchy...</string>
+    <string name="status_reading_structure">Reading folder structures and files...</string>
+    <string name="status_scanning">Scanning</string>
+    <string name="status_active">Active...</string>
+    <string name="label_item_prefix">Item: %1$s</string>
+    <string name="status_discovering_entries">Discovering structural entries...</string>
+    <string name="status_terminal_init">Initializing search nodes...\nScanning directory sub-trees recursive...</string>
+    <string name="label_scanning_live">Scanning Live:</string>
+    <string name="title_duplicate_clash">Duplicate Name Clash</string>
+    <string name="desc_duplicate_clash">Files with identical names found in different folders. Choose a renaming resolution:</string>
+    <string name="desc_conflict_explanation">Multiple files named \"%1$s\" are located in separate child folders. Select resolution strategy:</string>
+    <string name="label_duplicated_subdirectories">DUPLICATED SUBDIRECTORIES:</string>
+    <string name="btn_auto_sequence">Auto-Sequence</string>
+    <string name="desc_auto_sequence">e.g. name_1.jpg</string>
+    <string name="btn_parent_prefix">Parent Prefix</string>
+    <string name="desc_parent_prefix">e.g. name_(Trip).jpg</string>
+    <string name="checkbox_apply_all_conflicts">Apply strategy selection to all remaining conflicts</string>
+    <string name="label_un_nesting">Un-Nesting</string>
+    <string name="btn_cancel_job">Cancel Job</string>
+    <string name="title_cancel_job">Cancel Job?</string>
+    <string name="desc_cancel_job">Cancel the current job?</string>
+    <string name="btn_yes_cancel">Yes, Cancel</string>
+    <string name="btn_continue">Continue</string>
+    <string name="title_operation_cancelled">Operation Cancelled</string>
+    <string name="btn_return_hub">Return to Workspace Hub</string>
+    <string name="title_extraction_error">Extraction Error</string>
+
+    <string name="title_execution_log_stats">Execution Log &amp; Stats</string>
+    <string name="summary_copied_skipped">Copied %1$d files, skipped %2$d</string>
+    <string name="label_skipped_files">Skipped Files (%1$d)</string>
+    <string name="btn_hide">▲ Hide</string>
+    <string name="btn_show_details">▼ Show Details</string>
+    <string name="title_final_operation_stats">Final Operation Stats</string>
+    <string name="label_total_files_processed">Total Files Processed</string>
+    <string name="label_final_directory_size">Final Directory Size</string>
+    <string name="label_duplicates_renamed">Duplicates Renamed</string>
+    <string name="label_conflicts_resolved">Conflicts Resolved</string>
+    <string name="label_execution_time">Execution Time</string>
+    <string name="btn_start_another_session">Start Another Session</string>
+    <string name="btn_main_menu">Main Menu</string>
+    <string name="toast_folder_access_error">Could not get access to this folder. Please choose another.</string>
+    <string name="status_success_manifest">Loading final archive manifest files...\nAll items written successfully.</string>
+    <string name="theme_toggle_description">Toggle dark or light theme</string>
+    <string name="contact_mail_description">Contact Mail</string>
+    <string name="privacy_policy_description">Privacy Policy</string>
+    <string name="success_icon_description">Success</string>
+    <string name="toast_mail_fallback">Mail support: %1$s</string>
+    <string name="toast_site_fallback">Landing Site: %1$s</string>
+    <string name="toast_privacy_fallback">Privacy Portal: %1$s</string>
 </resources>

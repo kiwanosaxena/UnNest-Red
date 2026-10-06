@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UnNest:Red - Directory Flattener for Android</title>
+  <style>
+    :root {
+      --bg-paper: #F5F3ED;
+      --surface-paper: #FAF8F4;
+      --ink-charcoal: #2C302E;
+      --ink-subtle: #626865;
+      --ink-red: #C0392B;
+      --ink-sage: #476856;
+      --border-color: #E2DDD3;
+      --accent-gold: #CBB696;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-paper);
+      color: var(--ink-charcoal);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      line-height: 1.6;
+      background-image: linear-gradient(var(--border-color) 1px, transparent 1px);
+      background-size: 100% 32px;
+    }
+
+    .container {
+      max-width: 640px;
+      width: 100%;
+      background: var(--surface-paper);
+      border: 1.5px solid var(--border-color);
+      border-radius: 16px;
+      padding: 40px 32px;
+      box-shadow: 0 4px 20px rgba(44, 48, 46, 0.06);
+      position: relative;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ink-red);
+      background: rgba(192, 57, 43, 0.08);
+      border: 1px solid rgba(192, 57, 43, 0.2);
+      border-radius: 6px;
+      padding: 4px 10px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--ink-charcoal);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-subtle);
+      letter-spacing: 0.5px;
+      margin-bottom: 24px;
+    }
+
+    .description {
+      font-size: 16px;
+      color: var(--ink-charcoal);
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    a.button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      transition: all 0.15s ease;
+    }
+
+    .button-primary {
+      background: var(--ink-red);
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(192, 57, 43, 0.25);
+    }
+
+    .button-primary:hover {
+      background: #A93226;
+    }
+
+    .button-secondary {
+      background: transparent;
+      color: var(--ink-sage);
+      border: 1.5px solid var(--ink-sage);
+    }
+
+    .button-secondary:hover {
+      background: rgba(71, 104, 86, 0.08);
+    }
+
+    .footer {
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+      font-size: 13px;
+      color: var(--ink-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer a {
+      color: var(--ink-charcoal);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <span class="badge">Directory Flattener</span>
+    <h1>UnNest:Red</h1>
+    <div class="subtitle">A Product of Avika Labs</div>
+
+    <p class="description">
+      UnNest:Red is a lightweight, privacy-focused utility for Android designed to flatten deeply nested directory trees into a single consolidated folder or an organized .ZIP archive. Engineered to operate entirely offline without internet permissions, UnNest processes files strictly on your device using Android's Storage Access Framework—ensuring all items are safely copied without modifying or deleting original files.
+    </p>
+
+    <div class="actions">
+      <a href="privacy-policy.html" class="button button-primary">Privacy Policy</a>
+      <a href="mailto:avikashal@gmail.com" class="button button-secondary">Contact Support</a>
+    </div>
+
+    <div class="footer">
+      <span>Support: <a href="mailto:avikashal@gmail.com">avikashal@gmail.com</a></span>
+      <span>&copy; Avika Labs</span>
+    </div>
+  </div>
+</body>
+</html>
