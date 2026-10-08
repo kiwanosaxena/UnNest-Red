@@ -91,4 +91,59 @@
     <string name="toast_mail_fallback">Mail support: %1$s</string>
     <string name="toast_site_fallback">Landing Site: %1$s</string>
     <string name="toast_privacy_fallback">Privacy Portal: %1$s</string>
+    
+    <!-- Preview Screen Strings -->
+    <string name="title_preview">Folder Structure Preview</string>
+    <string name="subtitle_preview">Review detected files and customize extraction</string>
+    <string name="summary_total_files">Total Files</string>
+    <string name="summary_folders">Folders</string>
+    <string name="summary_max_depth">Max Depth</string>
+    <string name="summary_total_size">Total Size</string>
+    <string name="summary_junk_skipped">Hidden / Junk</string>
+    <string name="section_file_types">FILE CATEGORIES</string>
+    <string name="section_conflicts">NAME CONFLICT RESOLUTION</string>
+    <string name="conflicts_detected">%1$d files share a name</string>
+    <string name="conflicts_none">No file name conflicts detected</string>
+    <string name="section_storage_check">DESTINATION STORAGE CAPACITY</string>
+    <string name="storage_sufficient">Sufficient storage available on destination</string>
+    <string name="storage_insufficient">INSUFFICIENT STORAGE</string>
+    <string name="storage_warning_desc">Required %1$s exceeds destination free space (%2$s).</string>
+    <string name="storage_available">Available: %1$s</string>
+    <string name="storage_required">Estimated space required: %1$s</string>
+    <string name="section_files_by_folder">SUBFOLDER BREAKDOWN</string>
+    <string name="search_files_placeholder">Search files by name…</string>
+    <string name="btn_back">Back</string>
+    <string name="btn_extract_format">Extract %1$d files (%2$s)</string>
+    <string name="btn_cancel_scan">Cancel Scan</string>
+    <string name="status_scanning_progress">Scanning… %1$d files discovered</string>
+    <string name="category_photos">Photos</string>
+    <string name="category_videos">Videos</string>
+    <string name="category_audio">Audio</string>
+    <string name="category_documents">Documents</string>
+    <string name="category_archives">Archives</string>
+    <string name="category_other">Other</string>
+
+    <!-- Additional Feature Strings -->
+    <string name="toggle_skip_duplicates">Skip identical files</string>
+    <string name="toggle_skip_duplicates_desc">Compare matching-size files with SHA-256 and keep only one copy</string>
+    <string name="section_filters">FILTERS</string>
+    <string name="filter_size_min">Min size (MB)</string>
+    <string name="filter_size_max">Max size (MB)</string>
+    <string name="filter_date_start">From date</string>
+    <string name="filter_date_end">To date</string>
+    <string name="filter_date_any">Any</string>
+    <string name="filter_reset">Reset</string>
+    <string name="label_duplicates_skipped">Identical Duplicates Skipped</string>
+    <string name="btn_open_folder">Open Folder</string>
+    <string name="btn_share_zip">Share ZIP</string>
+    <string name="toast_cannot_open_folder">No app available to open this folder</string>
+    <string name="toast_cannot_share_zip">No app available to share the ZIP</string>
+
+    <!-- Hub and Preview Output Flow Strings -->
+    <string name="btn_analyze_folder">Analyze Folder</string>
+    <string name="section_output">OUTPUT SETTINGS</string>
+    <string name="storage_choose_dest_first">Choose a destination to check free space</string>
+    <string name="btn_reason_choose_dest">Choose a destination first</string>
+    <string name="btn_reason_insufficient_space">Not enough space</string>
+    <string name="warning_dest_inside_source">Destination is inside the source folder. It will be excluded from extraction.</string>
 </resources>

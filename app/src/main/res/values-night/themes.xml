@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.MyApplication" parent="android:Theme.DeviceDefault.NoActionBar">
-        <item name="android:windowBackground">#FFF5F3ED</item>
+        <item name="android:windowBackground">#FF181715</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/paper_background</item>
+        <item name="windowSplashScreenBackground">#FF181715</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="postSplashScreenTheme">@style/Theme.MyApplication</item>
     </style>

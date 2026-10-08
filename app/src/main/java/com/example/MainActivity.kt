@@ -53,20 +53,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.example.ui.theme.MyApplicationTheme
-import com.example.ui.theme.PaperBackground
-import com.example.ui.theme.PaperSurface
-import com.example.ui.theme.PaperSurfaceDarker
-import com.example.ui.theme.InkCharcoal
-import com.example.ui.theme.InkSubtle
-import com.example.ui.theme.InkSage
-import com.example.ui.theme.InkSageLight
-import com.example.ui.theme.InkRedWax
-import com.example.ui.theme.InkRedWaxLight
-import com.example.ui.theme.InkGold
-import com.example.ui.theme.ThemeRed
-import com.example.ui.theme.ThemeRedLight
-import com.example.ui.theme.VelvetRed
-import com.example.ui.theme.VelvetRedLight
+import com.example.ui.theme.UnNestTheme
 
 @Composable
 fun FolderIcon(modifier: Modifier = Modifier, color: Color) {
@@ -128,32 +115,24 @@ fun PaperCanvas(
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val onBg = MaterialTheme.colorScheme.onBackground
+    val colors = UnNestTheme.colors
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(colors.background)
             .drawBehind {
                 val hSpacing = 28.dp.toPx()
                 val lineWeight = 0.5.dp.toPx()
-                val lineColor = onBg.copy(alpha = 0.05f)
                 var y = 0f
                 while (y < size.height) {
                     drawLine(
-                        color = lineColor,
+                        color = colors.ledgerLine,
                         start = Offset(0f, y),
                         end = Offset(size.width, y),
                         strokeWidth = lineWeight
                     )
                     y += hSpacing
                 }
-
-                drawLine(
-                    color = InkRedWax.copy(alpha = 0.08f),
-                    start = Offset(36.dp.toPx(), 0f),
-                    end = Offset(36.dp.toPx(), size.height),
-                    strokeWidth = 1.2f.dp.toPx()
-                )
             }
     ) {
         content()
@@ -181,10 +160,21 @@ fun UnNestAppNavigation(viewModel: UnNestViewModel) {
                     viewModel.navigateTo(AppScreen.Hub)
                 })
                 AppScreen.Hub -> UnNestHubScreen(viewModel)
+                AppScreen.Preview -> UnNestPreviewScreen(viewModel)
                 AppScreen.Workbench -> UnNestWorkbenchScreen(viewModel)
                 AppScreen.Success -> UnNestSuccessScreen(viewModel)
             }
         }
+
+        val showOptDialog by viewModel.showOptimizationDialog.collectAsStateWithLifecycle()
+        val heavyCount by viewModel.detectedHeavyFilesCount.collectAsStateWithLifecycle()
+        val context = LocalContext.current
+        UnNestOptimizationAlertDialog(
+            showDialog = showOptDialog,
+            detectedHeavyFilesCount = heavyCount,
+            onDismissRequest = { viewModel.proceedWithoutOptimization(context) },
+            onConfirmExecution = { viewModel.proceedWithOptimization(context) }
+        )
 
         if (screen != AppScreen.Splash) {
             IconButton(
@@ -214,7 +204,7 @@ fun SplashDocument(
     scale: Float,
     progress: Float
 ) {
-    val inkCharcoalColor = MaterialTheme.colorScheme.onBackground
+    val colors = UnNestTheme.colors
     val currentX = offsetX * (1f - progress)
     val currentY = offsetY + (150f - offsetY) * progress
     val currentRotation = rotation * (1f - progress)
@@ -231,17 +221,17 @@ fun SplashDocument(
                 alpha = currentAlpha
             }
             .size(width = 46.dp, height = 58.dp)
-            .background(Color.White, RoundedCornerShape(4.dp))
-            .border(1.5.dp, inkCharcoalColor, RoundedCornerShape(4.dp))
+            .background(colors.card, RoundedCornerShape(4.dp))
+            .border(1.5.dp, colors.textPrimary, RoundedCornerShape(4.dp))
             .padding(2.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Spacer(modifier = Modifier.height(4.dp))
-            Box(modifier = Modifier.fillMaxWidth(0.7f).height(2.dp).background(inkCharcoalColor.copy(alpha = 0.2f)))
+            Box(modifier = Modifier.fillMaxWidth(0.7f).height(2.dp).background(colors.textPrimary.copy(alpha = 0.2f)))
             Spacer(modifier = Modifier.height(3.dp))
-            Box(modifier = Modifier.fillMaxWidth(0.5f).height(2.dp).background(inkCharcoalColor.copy(alpha = 0.2f)))
+            Box(modifier = Modifier.fillMaxWidth(0.5f).height(2.dp).background(colors.textPrimary.copy(alpha = 0.2f)))
             Spacer(modifier = Modifier.height(3.dp))
-            Box(modifier = Modifier.fillMaxWidth(0.6f).height(2.dp).background(inkCharcoalColor.copy(alpha = 0.2f)))
+            Box(modifier = Modifier.fillMaxWidth(0.6f).height(2.dp).background(colors.textPrimary.copy(alpha = 0.2f)))
             
             Spacer(modifier = Modifier.weight(1f))
             Box(
@@ -253,7 +243,7 @@ fun SplashDocument(
             ) {
                 Text(
                     text = extension,
-                    color = Color.White,
+                    color = colors.onAccent,
                     fontSize = 7.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.5.sp
@@ -265,7 +255,11 @@ fun SplashDocument(
 
 @Composable
 fun GoldenFolderPocket(modifier: Modifier = Modifier) {
-    val inkCharcoalColor = MaterialTheme.colorScheme.onBackground
+    val colors = UnNestTheme.colors
+    val isDark = isSystemInDarkTheme()
+    val folderBack = if (isDark) Color(0xFF8C7A5E) else Color(0xFFCBB696)
+    val folderFront = if (isDark) Color(0xFFA08D70) else Color(0xFFDECBB1)
+
     Box(
         modifier = modifier.size(width = 110.dp, height = 80.dp)
     ) {
@@ -273,15 +267,15 @@ fun GoldenFolderPocket(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer { rotationZ = -2f }
-                .background(Color(0xFFCBB696), RoundedCornerShape(8.dp))
-                .border(2.dp, inkCharcoalColor, RoundedCornerShape(8.dp))
+                .background(folderBack, RoundedCornerShape(8.dp))
+                .border(2.dp, colors.textPrimary, RoundedCornerShape(8.dp))
         )
         Box(
             modifier = Modifier
                 .offset(x = 10.dp, y = (-10).dp)
                 .size(36.dp, 16.dp)
-                .background(Color(0xFFCBB696), RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-                .border(2.dp, inkCharcoalColor, RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+                .background(folderBack, RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+                .border(2.dp, colors.textPrimary, RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
         )
         Box(
             modifier = Modifier
@@ -289,8 +283,8 @@ fun GoldenFolderPocket(modifier: Modifier = Modifier) {
                 .fillMaxWidth(0.85f)
                 .align(Alignment.Center)
                 .height(72.dp)
-                .background(Color.White, RoundedCornerShape(4.dp))
-                .border(1.5.dp, inkCharcoalColor, RoundedCornerShape(4.dp))
+                .background(colors.card, RoundedCornerShape(4.dp))
+                .border(1.5.dp, colors.textPrimary, RoundedCornerShape(4.dp))
         )
         Box(
             modifier = Modifier
@@ -301,18 +295,18 @@ fun GoldenFolderPocket(modifier: Modifier = Modifier) {
                     rotationZ = 3f
                     transformOrigin = TransformOrigin(0f, 1f)
                 }
-                .background(Color(0xFFDECBB1), RoundedCornerShape(8.dp))
-                .border(2.dp, inkCharcoalColor, RoundedCornerShape(8.dp))
+                .background(folderFront, RoundedCornerShape(8.dp))
+                .border(2.dp, colors.textPrimary, RoundedCornerShape(8.dp))
         ) {
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .background(Color.White.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                    .background(colors.card.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
                     text = stringResource(id = R.string.label_unnest_folder),
-                    color = inkCharcoalColor,
+                    color = colors.textPrimary,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
@@ -329,8 +323,8 @@ fun UnNestSplashScreen(onFinished: () -> Unit) {
     BackHandler {
         onFinished()
     }
-    val inkCharcoalColor = MaterialTheme.colorScheme.onBackground
-    val inkSubtleColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+    val colors = UnNestTheme.colors
+    val isDark = isSystemInDarkTheme()
     var animateStart by remember { mutableStateOf(false) }
     
     // Shortened to 1.2s per specification with tap-to-skip
@@ -367,11 +361,11 @@ fun UnNestSplashScreen(onFinished: () -> Unit) {
                     label = "splash_progress"
                 )
 
-                SplashDocument(".JPG", ThemeRed, -90f, -60f, -35f, 1.0f, progress)
-                SplashDocument(".ZIP", InkSage, 90f, -40f, 40f, 0.9f, progress)
-                SplashDocument(".TXT", InkGold, -50f, -120f, -15f, 0.95f, progress)
-                SplashDocument(".PDF", InkRedWax, 45f, -110f, 25f, 0.92f, progress)
-                SplashDocument(".MP4", Color(0xFF76586F), 100f, -140f, 50f, 0.88f, progress)
+                SplashDocument(".JPG", colors.accent, -90f, -60f, -35f, 1.0f, progress)
+                SplashDocument(".ZIP", colors.success, 90f, -40f, 40f, 0.9f, progress)
+                SplashDocument(".TXT", colors.warning, -50f, -120f, -15f, 0.95f, progress)
+                SplashDocument(".PDF", colors.error, 45f, -110f, 25f, 0.92f, progress)
+                SplashDocument(".MP4", if (isDark) Color(0xFFA889A1) else Color(0xFF76586F), 100f, -140f, 50f, 0.88f, progress)
 
                 GoldenFolderPocket(
                     modifier = Modifier
@@ -385,7 +379,7 @@ fun UnNestSplashScreen(onFinished: () -> Unit) {
             Text(
                 text = stringResource(id = R.string.title_directory_flattener),
                 style = MaterialTheme.typography.headlineLarge,
-                color = inkCharcoalColor,
+                color = colors.textPrimary,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.sp,
                 textAlign = TextAlign.Center
@@ -398,7 +392,7 @@ fun UnNestSplashScreen(onFinished: () -> Unit) {
                 fontFamily = FontFamily.Monospace,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
-                color = inkSubtleColor,
+                color = colors.textSecondary,
                 letterSpacing = 2.sp
             )
         }
@@ -408,17 +402,12 @@ fun UnNestSplashScreen(onFinished: () -> Unit) {
 // Screen 2: UnNest Hub (Configuration and Legal Settings Deck)
 @Composable
 fun UnNestHubScreen(viewModel: UnNestViewModel) {
-    val inkCharcoalColor = MaterialTheme.colorScheme.onBackground
-    val inkSubtleColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+    val colors = UnNestTheme.colors
     val context = LocalContext.current
     val srcUri by viewModel.sourceDirectoryUri.collectAsStateWithLifecycle()
-    val destUri by viewModel.destinationDirectoryUri.collectAsStateWithLifecycle()
-    val mode by viewModel.flattenMode.collectAsStateWithLifecycle()
 
-    val scope = rememberCoroutineScope()
-    val isChecking by viewModel.isCheckingPreCompressed.collectAsStateWithLifecycle()
-    val showDlg by viewModel.showOptimizationDialog.collectAsStateWithLifecycle()
-    val heavyCount by viewModel.detectedHeavyFilesCount.collectAsStateWithLifecycle()
+    val isScanning by viewModel.isScanning.collectAsStateWithLifecycle()
+    val scanProgressMsg by viewModel.scanProgressMessage.collectAsStateWithLifecycle()
 
     var showPrivacyDialog by remember { mutableStateOf(false) }
 
@@ -450,73 +439,6 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
         }
     )
 
-    val destChooser = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocumentTree(),
-        onResult = { uri ->
-            if (uri != null) {
-                val oldUri = destUri
-                if (oldUri != null && oldUri != uri) {
-                    try {
-                        context.contentResolver.releasePersistableUriPermission(
-                            oldUri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                        )
-                    } catch (ignored: Exception) {}
-                }
-                try {
-                    val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    context.contentResolver.takePersistableUriPermission(uri, flags)
-                } catch (e: Exception) {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.toast_folder_access_error),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                viewModel.setDestinationDirectory(uri)
-            }
-        }
-    )
-
-    val proceedWithExtraction: () -> Unit = {
-        if (mode == FlattenMode.ZIP) {
-            scope.launch {
-                viewModel.setCheckingState(true)
-                val count = viewModel.checkPreCompressedMediaFast(context)
-                viewModel.setCheckingState(false)
-                if (count > 0) {
-                    viewModel.setHeavyFilesCount(count)
-                    viewModel.setOptimizationDialogVisibility(true)
-                } else {
-                    viewModel.isOptimizationEnabled = false
-                    viewModel.startExtraction(context)
-                }
-            }
-        } else {
-            viewModel.isOptimizationEnabled = false
-            viewModel.startExtraction(context)
-        }
-    }
-
-    val notificationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { _ ->
-            proceedWithExtraction()
-        }
-    )
-
-    val onStartExtractionRequested: () -> Unit = {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                proceedWithExtraction()
-            }
-        } else {
-            proceedWithExtraction()
-        }
-    }
-
     PaperCanvas(
         modifier = Modifier
             .fillMaxSize()
@@ -539,13 +461,13 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
                     text = stringResource(id = R.string.title_directory_flattener),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = inkCharcoalColor,
+                    color = colors.textPrimary,
                     letterSpacing = 0.5.sp
                 )
                 Text(
                     text = stringResource(id = R.string.subtitle_hub_flatten),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = inkSubtleColor,
+                    color = colors.textSecondary,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
@@ -561,19 +483,19 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
                         elevation = 3.dp,
                         shape = RoundedCornerShape(16.dp),
                         clip = false,
-                        ambientColor = inkSubtleColor.copy(alpha = 0.25f),
-                        spotColor = inkSubtleColor.copy(alpha = 0.35f)
+                        ambientColor = colors.textSecondary.copy(alpha = 0.25f),
+                        spotColor = colors.textSecondary.copy(alpha = 0.35f)
                     )
-                    .background(PaperSurface, RoundedCornerShape(16.dp))
+                    .background(colors.card, RoundedCornerShape(16.dp))
                     .clickable { sourceChooser.launch(null) }
-                    .border(1.5.dp, PaperSurfaceDarker, RoundedCornerShape(16.dp))
+                    .border(1.5.dp, colors.cardBorder, RoundedCornerShape(16.dp))
                     .padding(16.dp)
                     .testTag("source_picker_box"),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     FolderIcon(
-                        color = if (srcUri != null) VelvetRed else VelvetRedLight,
+                        color = if (srcUri != null) colors.folderArt else colors.folderArtMuted,
                         modifier = Modifier.size(36.dp)
                     )
                     Spacer(modifier = Modifier.height(6.dp))
@@ -581,104 +503,13 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
                         text = stringResource(id = R.string.btn_select_source),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = VelvetRed
+                        color = colors.textPrimary
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = if (srcUri != null) getDisplayPath(srcUri!!) else stringResource(id = R.string.status_none_selected),
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (srcUri != null) VelvetRed else VelvetRedLight,
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    )
-                }
-            }
-
-            // Mode Toggle
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(PaperSurfaceDarker.copy(alpha = 0.5f))
-                    .border(1.dp, PaperSurfaceDarker, RoundedCornerShape(24.dp))
-                    .padding(3.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                val isDirect = mode == FlattenMode.DIRECT
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(if (isDirect) ThemeRedLight else Color.Transparent)
-                        .clickable { viewModel.setFlattenMode(FlattenMode.DIRECT) }
-                        .padding(vertical = 10.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.mode_plain_copy),
-                        color = if (isDirect) ThemeRed else inkSubtleColor,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
-                    )
-                }
-                val isZip = mode == FlattenMode.ZIP
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(if (isZip) ThemeRedLight else Color.Transparent)
-                        .clickable { viewModel.setFlattenMode(FlattenMode.ZIP) }
-                        .padding(vertical = 10.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.mode_compress_zip),
-                        color = if (isZip) ThemeRed else inkSubtleColor,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
-                    )
-                }
-            }
-
-            // Picker Card 2: Destination
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(130.dp)
-                    .shadow(
-                        elevation = 3.dp,
-                        shape = RoundedCornerShape(16.dp),
-                        clip = false,
-                        ambientColor = inkSubtleColor.copy(alpha = 0.25f),
-                        spotColor = inkSubtleColor.copy(alpha = 0.35f)
-                    )
-                    .background(PaperSurface, RoundedCornerShape(16.dp))
-                    .clickable { destChooser.launch(null) }
-                    .border(1.5.dp, PaperSurfaceDarker, RoundedCornerShape(16.dp))
-                    .padding(16.dp)
-                    .testTag("destination_picker_box"),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    FolderIcon(
-                        color = if (destUri != null) VelvetRed else VelvetRedLight,
-                        modifier = Modifier.size(36.dp)
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = stringResource(id = R.string.btn_select_destination),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = VelvetRed
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = if (destUri != null) getDisplayPath(destUri!!) else stringResource(id = R.string.status_none_selected),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (destUri != null) VelvetRed else VelvetRedLight,
+                        color = if (srcUri != null) colors.textPrimary else colors.textSecondary,
                         textAlign = TextAlign.Center,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -689,42 +520,68 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Primary Execution Button
-            val workspaceReady = srcUri != null && destUri != null
+            // Primary Execution Button: Enabled as soon as source folder is chosen
+            val sourceReady = srcUri != null
             Button(
-                onClick = { onStartExtractionRequested() },
-                enabled = workspaceReady && !isChecking,
+                onClick = { viewModel.startScan(context) },
+                enabled = sourceReady && !isScanning,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp)
                     .testTag("process_button"),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = ThemeRed,
-                    contentColor = Color.White,
-                    disabledContainerColor = inkSubtleColor.copy(alpha = 0.12f),
-                    disabledContentColor = inkSubtleColor
+                    containerColor = colors.accent,
+                    contentColor = colors.onAccent,
+                    disabledContainerColor = colors.textSecondary.copy(alpha = 0.12f),
+                    disabledContentColor = colors.textSecondary
                 ),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                if (isChecking) {
+                if (isScanning) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
-                        color = Color.White,
+                        color = colors.onAccent,
                         strokeWidth = 2.dp
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = stringResource(id = R.string.status_analyzing_files),
+                        text = scanProgressMsg.ifEmpty { stringResource(id = R.string.status_scanning_progress, 0) },
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.2.sp
                     )
                 } else {
                     Text(
-                        text = stringResource(id = R.string.btn_analyze_folder_structure),
+                        text = stringResource(id = R.string.btn_analyze_folder),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.2.sp
+                    )
+                }
+            }
+
+            if (isScanning) {
+                Spacer(modifier = Modifier.height(10.dp))
+                OutlinedButton(
+                    onClick = { viewModel.cancelScan() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .testTag("cancel_scan_button"),
+                    border = BorderStroke(1.5.dp, colors.accent),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.accent),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(id = R.string.btn_cancel_scan),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -740,7 +597,7 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
                 Text(
                     text = stringResource(id = R.string.section_specifications),
                     style = MaterialTheme.typography.labelSmall,
-                    color = inkSubtleColor,
+                    color = colors.textSecondary,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.0.sp,
                     modifier = Modifier.padding(bottom = 6.dp)
@@ -757,12 +614,12 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
                     Text(
                         text = stringResource(id = R.string.label_build_version),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = inkCharcoalColor
+                        color = colors.textPrimary
                     )
                     Text(
                         text = "Version " + BuildConfig.VERSION_NAME,
                         style = MaterialTheme.typography.bodySmall,
-                        color = inkSubtleColor
+                        color = colors.textSecondary
                     )
                 }
 
@@ -791,12 +648,12 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
                     Text(
                         text = stringResource(id = R.string.label_corporate_publishing),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = inkCharcoalColor
+                        color = colors.textPrimary
                     )
                     Text(
                         text = corporateLabelStr,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = InkGold,
+                        color = colors.warning,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -828,12 +685,12 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
                     Text(
                         text = stringResource(id = R.string.engineering_support),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = inkCharcoalColor
+                        color = colors.textPrimary
                     )
                     Icon(
                         imageVector = Icons.Default.Email,
                         contentDescription = stringResource(id = R.string.contact_mail_description),
-                        tint = InkSage,
+                        tint = colors.success,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -850,12 +707,12 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
                     Text(
                         text = stringResource(id = R.string.view_privacy_policy),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = inkCharcoalColor
+                        color = colors.textPrimary
                     )
                     Icon(
                         imageVector = Icons.Outlined.Info,
                         contentDescription = stringResource(id = R.string.privacy_policy_description),
-                        tint = InkSage,
+                        tint = colors.success,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -871,7 +728,7 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
                 TextButton(onClick = { showPrivacyDialog = false }) {
                     Text(
                         text = stringResource(id = R.string.btn_close),
-                        color = InkRedWax,
+                        color = colors.error,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -891,43 +748,32 @@ fun UnNestHubScreen(viewModel: UnNestViewModel) {
                 }) {
                     Text(
                         text = stringResource(id = R.string.btn_full_privacy_policy),
-                        color = InkSage,
+                        color = colors.success,
                         fontWeight = FontWeight.Bold
                     )
                 }
             },
-            containerColor = PaperSurface,
+            containerColor = colors.card,
+            titleContentColor = colors.textPrimary,
+            textContentColor = colors.textPrimary,
             title = {
                 Text(
                     text = stringResource(id = R.string.title_privacy),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = inkCharcoalColor
+                    color = colors.textPrimary
                 )
             },
             text = {
                 Text(
                     text = stringResource(id = R.string.privacy_body),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = inkCharcoalColor,
+                    color = colors.textPrimary,
                     lineHeight = 20.sp
                 )
             }
         )
     }
-
-    UnNestOptimizationAlertDialog(
-        showDialog = showDlg,
-        detectedHeavyFilesCount = heavyCount,
-        onDismissRequest = {
-            viewModel.setOptimizationDialogVisibility(false)
-        },
-        onConfirmExecution = {
-            viewModel.setOptimizationDialogVisibility(false)
-            viewModel.isOptimizationEnabled = true
-            viewModel.startExtraction(context)
-        }
-    )
 }
 
 fun getDisplayPath(uri: Uri): String {
@@ -943,6 +789,7 @@ fun getDisplayPath(uri: Uri): String {
 // Screen 3: UnNest Workbench (Processing Deck)
 @Composable
 fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
+    val colors = UnNestTheme.colors
     val context = LocalContext.current
     var showCancelDialog by remember { mutableStateOf(false) }
 
@@ -955,15 +802,12 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
             viewModel.navigateTo(AppScreen.Hub)
         }
     }
-    val inkCharcoalColor = MaterialTheme.colorScheme.onBackground
-    val inkSubtleColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
     val totalFiles = viewModel.sessionLogs.collectAsStateWithLifecycle().value.size
     val maxDepth by viewModel.maxScannedDepth.collectAsStateWithLifecycle()
     val duplicatesCount by viewModel.duplicatesCount.collectAsStateWithLifecycle()
     val resolvedConflicts by viewModel.conflictsResolvedCount.collectAsStateWithLifecycle()
 
     var elapsedMs by remember { mutableStateOf(0L) }
-    var applyToAllConflictsChecked by remember { mutableStateOf(false) }
 
     LaunchedEffect(status) {
         if (status is ProcessStatus.ProcessingFiles) {
@@ -990,7 +834,7 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
             Text(
                 text = stringResource(id = R.string.title_directory_flattener),
                 style = MaterialTheme.typography.headlineMedium,
-                color = inkCharcoalColor,
+                color = colors.textPrimary,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
@@ -1005,11 +849,11 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                         elevation = 2.dp,
                         shape = RoundedCornerShape(12.dp),
                         clip = false,
-                        ambientColor = inkSubtleColor.copy(alpha = 0.2f),
-                        spotColor = inkSubtleColor.copy(alpha = 0.3f)
+                        ambientColor = colors.textSecondary.copy(alpha = 0.2f),
+                        spotColor = colors.textSecondary.copy(alpha = 0.3f)
                     )
-                    .background(PaperSurface, RoundedCornerShape(12.dp))
-                    .border(1.2.dp, PaperSurfaceDarker, RoundedCornerShape(12.dp))
+                    .background(colors.card, RoundedCornerShape(12.dp))
+                    .border(1.2.dp, colors.cardBorder, RoundedCornerShape(12.dp))
                     .padding(12.dp)
             ) {
                 Row(
@@ -1027,7 +871,7 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                         text = stringResource(id = R.string.stats_analysis_header, scCount, formattedSize, maxDepth),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
-                        color = VelvetRed
+                        color = colors.accent
                     )
                 }
             }
@@ -1050,21 +894,21 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                             ) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(130.dp),
-                                    color = ThemeRed,
+                                    color = colors.accent,
                                     strokeWidth = 8.dp,
-                                    trackColor = ThemeRedLight
+                                    trackColor = colors.accentTint
                                 )
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(
                                         text = stringResource(id = R.string.status_scanning),
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = inkCharcoalColor
+                                        color = colors.textPrimary
                                     )
                                     Text(
                                         text = stringResource(id = R.string.status_active),
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = ThemeRed
+                                        color = colors.accent
                                     )
                                 }
                             }
@@ -1074,7 +918,7 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                         Text(
                             text = stringResource(id = R.string.label_item_prefix, itemDisplay),
                             style = MaterialTheme.typography.bodySmall,
-                            color = inkSubtleColor,
+                            color = colors.textSecondary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -1085,8 +929,8 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                                 .weight(1f)
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFF1E211F))
-                                .border(1.5.dp, inkCharcoalColor, RoundedCornerShape(12.dp))
+                                .background(colors.terminalBg)
+                                .border(1.5.dp, colors.cardBorder, RoundedCornerShape(12.dp))
                                 .padding(12.dp)
                         ) {
                             val terminalScroll = rememberScrollState()
@@ -1097,7 +941,7 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                                 text = s.treeOutput.ifEmpty { stringResource(id = R.string.status_terminal_init) },
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = FontFamily.Monospace,
-                                color = Color(0xFFCBE2D4),
+                                color = colors.terminalText,
                                 modifier = Modifier
                                     .verticalScroll(terminalScroll)
                                     .fillMaxSize()
@@ -1107,153 +951,55 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                 }
 
                 is ProcessStatus.Conflict -> {
-                    Column(
+                    Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(colors.warningTint)
+                            .border(1.5.dp, colors.warning, RoundedCornerShape(12.dp))
+                            .padding(20.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .shadow(
-                                    elevation = 4.dp,
-                                    shape = RoundedCornerShape(12.dp),
-                                    clip = false,
-                                    ambientColor = InkGold.copy(alpha = 0.25f),
-                                    spotColor = InkGold.copy(alpha = 0.35f)
-                                )
-                                .background(PaperSurface, RoundedCornerShape(12.dp))
-                                .border(1.5.dp, VelvetRed, RoundedCornerShape(12.dp))
-                                .padding(16.dp)
-                        ) {
-                            Column {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Warning,
-                                        contentDescription = null,
-                                        tint = VelvetRed,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = stringResource(id = R.string.title_duplicate_clash),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = VelvetRed,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                                Text(
-                                    text = stringResource(id = R.string.desc_conflict_explanation, s.conflictedName),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = VelvetRed
-                                )
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                Text(
-                                    text = stringResource(id = R.string.label_duplicated_subdirectories),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = VelvetRed,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(115.dp)
-                                        .padding(vertical = 4.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(PaperSurfaceDarker.copy(alpha = 0.3f))
-                                        .border(1.2.dp, PaperSurfaceDarker, RoundedCornerShape(8.dp))
-                                        .padding(8.dp)
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = colors.warning,
+                                modifier = Modifier.size(54.dp)
+                            )
+                            Spacer(modifier = Modifier.height(14.dp))
+                            Text(
+                                text = stringResource(id = R.string.title_duplicate_clash),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.warning
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = stringResource(id = R.string.desc_conflict_explanation, s.conflictedName),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = colors.textPrimary,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Button(
+                                    onClick = { viewModel.setConflictStrategy(1) },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(containerColor = colors.accent)
                                 ) {
-                                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                        items(s.duplicates) { dup ->
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(vertical = 4.dp),
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                FolderIcon(
-                                                    color = ThemeRed,
-                                                    modifier = Modifier.size(14.dp)
-                                                )
-                                                Spacer(modifier = Modifier.width(6.dp))
-                                                Text(
-                                                    text = "/${dup.relativePath}/${dup.name}",
-                                                    fontFamily = FontFamily.Monospace,
-                                                    fontSize = 11.sp,
-                                                    color = VelvetRed,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis
-                                                )
-                                            }
-                                        }
-                                    }
+                                    Text(stringResource(id = R.string.btn_auto_sequence), color = colors.onAccent, fontWeight = FontWeight.Bold)
                                 }
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { applyToAllConflictsChecked = !applyToAllConflictsChecked }
-                                        .padding(vertical = 4.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                                Button(
+                                    onClick = { viewModel.setConflictStrategy(2) },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(containerColor = colors.warning)
                                 ) {
-                                    Checkbox(
-                                        checked = applyToAllConflictsChecked,
-                                        onCheckedChange = { applyToAllConflictsChecked = it },
-                                        colors = CheckboxDefaults.colors(checkedColor = VelvetRed, uncheckedColor = VelvetRed.copy(alpha = 0.5f))
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = stringResource(id = R.string.checkbox_apply_all_conflicts),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = VelvetRed,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(14.dp))
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    Button(
-                                        onClick = { viewModel.submitConflictResolution(context, 1, applyToAllConflictsChecked) },
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .height(48.dp)
-                                            .testTag("resolve_seq_button"),
-                                        colors = ButtonDefaults.buttonColors(containerColor = ThemeRed),
-                                        shape = RoundedCornerShape(8.dp)
-                                    ) {
-                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                            Text(stringResource(id = R.string.btn_auto_sequence), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                            Text(stringResource(id = R.string.desc_auto_sequence), fontSize = 9.sp, color = Color.White.copy(alpha = 0.7f))
-                                        }
-                                    }
-
-                                    Button(
-                                        onClick = { viewModel.submitConflictResolution(context, 2, applyToAllConflictsChecked) },
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .height(48.dp)
-                                            .testTag("resolve_parent_button"),
-                                        colors = ButtonDefaults.buttonColors(containerColor = InkSage),
-                                        shape = RoundedCornerShape(8.dp)
-                                    ) {
-                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                            Text(stringResource(id = R.string.btn_parent_prefix), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                            Text(stringResource(id = R.string.desc_parent_prefix), fontSize = 9.sp, color = Color.White.copy(alpha = 0.7f))
-                                        }
-                                    }
+                                    Text(stringResource(id = R.string.btn_parent_prefix), color = colors.onAccent, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -1277,12 +1023,12 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                             ) {
                                 Canvas(modifier = Modifier.fillMaxSize()) {
                                     drawCircle(
-                                        color = ThemeRedLight,
+                                        color = colors.accentTint,
                                         radius = 75.dp.toPx(),
                                         style = Stroke(width = 10.dp.toPx())
                                     )
                                     drawArc(
-                                        color = ThemeRed,
+                                        color = colors.accent,
                                         startAngle = -90f,
                                         sweepAngle = ratio * 360f,
                                         useCenter = false,
@@ -1295,13 +1041,13 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                                     Text(
                                         text = stringResource(id = R.string.label_un_nesting),
                                         style = MaterialTheme.typography.titleSmall,
-                                        color = inkSubtleColor
+                                        color = colors.textSecondary
                                     )
                                     Text(
                                         text = pctText,
                                         style = MaterialTheme.typography.headlineLarge,
                                         fontWeight = FontWeight.Black,
-                                        color = ThemeRed,
+                                        color = colors.accent,
                                         fontSize = 24.sp
                                     )
                                 }
@@ -1317,11 +1063,11 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                                     elevation = 3.dp,
                                     shape = RoundedCornerShape(12.dp),
                                     clip = false,
-                                    ambientColor = inkSubtleColor.copy(alpha = 0.25f),
-                                    spotColor = inkSubtleColor.copy(alpha = 0.35f)
+                                    ambientColor = colors.textSecondary.copy(alpha = 0.25f),
+                                    spotColor = colors.textSecondary.copy(alpha = 0.35f)
                                 )
-                                .background(PaperSurface, RoundedCornerShape(12.dp))
-                                .border(1.5.dp, PaperSurfaceDarker, RoundedCornerShape(12.dp))
+                                .background(colors.card, RoundedCornerShape(12.dp))
+                                .border(1.5.dp, colors.cardBorder, RoundedCornerShape(12.dp))
                                 .padding(16.dp)
                         ) {
                             Column {
@@ -1329,39 +1075,39 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                                     text = stringResource(id = R.string.title_final_operation_stats),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = inkCharcoalColor,
+                                    color = colors.textPrimary,
                                     modifier = Modifier.padding(bottom = 10.dp)
                                 )
 
                                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    Text(stringResource(id = R.string.label_total_files_processed), style = MaterialTheme.typography.bodyMedium, color = inkSubtleColor)
-                                    Text("${s.filesWritten} / ${s.totalFiles}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = inkCharcoalColor)
+                                    Text(stringResource(id = R.string.label_total_files_processed), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+                                    Text("${s.filesWritten} / ${s.totalFiles}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                                 }
-                                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(inkCharcoalColor.copy(alpha = 0.05f)))
+                                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(colors.ledgerLine))
 
                                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    Text(stringResource(id = R.string.label_final_directory_size), style = MaterialTheme.typography.bodyMedium, color = inkSubtleColor)
+                                    Text(stringResource(id = R.string.label_final_directory_size), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
                                     val sizeVal = "${(s.filesWritten * 180) / 1024} KB"
-                                    Text(sizeVal, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = inkCharcoalColor)
+                                    Text(sizeVal, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                                 }
-                                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(inkCharcoalColor.copy(alpha = 0.05f)))
+                                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(colors.ledgerLine))
 
                                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    Text(stringResource(id = R.string.label_duplicates_renamed), style = MaterialTheme.typography.bodyMedium, color = inkSubtleColor)
-                                    Text("$duplicatesCount", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = inkCharcoalColor)
+                                    Text(stringResource(id = R.string.label_duplicates_renamed), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+                                    Text("$duplicatesCount", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                                 }
-                                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(inkCharcoalColor.copy(alpha = 0.05f)))
+                                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(colors.ledgerLine))
 
                                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    Text(stringResource(id = R.string.label_conflicts_resolved), style = MaterialTheme.typography.bodyMedium, color = inkSubtleColor)
-                                    Text("$resolvedConflicts", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = inkCharcoalColor)
+                                    Text(stringResource(id = R.string.label_conflicts_resolved), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+                                    Text("$resolvedConflicts", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                                 }
-                                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(inkCharcoalColor.copy(alpha = 0.05f)))
+                                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(colors.ledgerLine))
 
                                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    Text(stringResource(id = R.string.label_execution_time), style = MaterialTheme.typography.bodyMedium, color = inkSubtleColor)
+                                    Text(stringResource(id = R.string.label_execution_time), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
                                     val elapsedSecStr = String.format("%02dm %02ds", (elapsedMs / 1000) / 60, (elapsedMs / 1000) % 60)
-                                    Text(elapsedSecStr, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = InkSage)
+                                    Text(elapsedSecStr, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = colors.success)
                                 }
                             }
                         }
@@ -1374,8 +1120,8 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                             .weight(1f)
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .background(InkRedWaxLight)
-                            .border(1.5.dp, InkRedWax, RoundedCornerShape(12.dp))
+                            .background(colors.errorTint)
+                            .border(1.5.dp, colors.error, RoundedCornerShape(12.dp))
                             .padding(20.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -1383,7 +1129,7 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                             Icon(
                                 imageVector = Icons.Default.Warning,
                                 contentDescription = null,
-                                tint = InkRedWax,
+                                tint = colors.error,
                                 modifier = Modifier.size(54.dp)
                             )
                             Spacer(modifier = Modifier.height(14.dp))
@@ -1391,22 +1137,22 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                                 text = stringResource(id = R.string.title_extraction_error),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = inkCharcoalColor
+                                color = colors.error
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = s.message,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = inkCharcoalColor,
+                                color = colors.error,
                                 textAlign = TextAlign.Center
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                             Button(
                                 onClick = { viewModel.navigateTo(AppScreen.Hub) },
-                                colors = ButtonDefaults.buttonColors(containerColor = inkCharcoalColor),
+                                colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
-                                Text(stringResource(id = R.string.btn_return_hub), color = PaperBackground)
+                                Text(stringResource(id = R.string.btn_return_hub), color = colors.onAccent, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -1418,8 +1164,8 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                             .weight(1f)
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .background(PaperSurface)
-                            .border(1.5.dp, PaperSurfaceDarker, RoundedCornerShape(12.dp))
+                            .background(colors.card)
+                            .border(1.5.dp, colors.cardBorder, RoundedCornerShape(12.dp))
                             .padding(20.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -1427,7 +1173,7 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = null,
-                                tint = ThemeRed,
+                                tint = colors.accent,
                                 modifier = Modifier.size(54.dp)
                             )
                             Spacer(modifier = Modifier.height(14.dp))
@@ -1435,22 +1181,22 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                                 text = stringResource(id = R.string.title_operation_cancelled),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = inkCharcoalColor
+                                color = colors.textPrimary
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = s.message,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = inkCharcoalColor,
+                                color = colors.textPrimary,
                                 textAlign = TextAlign.Center
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                             Button(
                                 onClick = { viewModel.navigateTo(AppScreen.Hub) },
-                                colors = ButtonDefaults.buttonColors(containerColor = ThemeRed),
+                                colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
-                                Text(stringResource(id = R.string.btn_return_hub), color = Color.White, fontWeight = FontWeight.Bold)
+                                Text(stringResource(id = R.string.btn_return_hub), color = colors.onAccent, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -1467,8 +1213,8 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                         .fillMaxWidth()
                         .height(48.dp)
                         .testTag("cancel_button"),
-                    border = BorderStroke(1.5.dp, ThemeRed),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = ThemeRed),
+                    border = BorderStroke(1.5.dp, colors.accent),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.accent),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Icon(
@@ -1494,14 +1240,14 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                         text = stringResource(id = R.string.title_cancel_job),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = inkCharcoalColor
+                        color = colors.textPrimary
                     )
                 },
                 text = {
                     Text(
                         text = stringResource(id = R.string.desc_cancel_job),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = inkCharcoalColor
+                        color = colors.textPrimary
                     )
                 },
                 confirmButton = {
@@ -1511,15 +1257,17 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
                             viewModel.cancelJob(context)
                         }
                     ) {
-                        Text(stringResource(id = R.string.btn_yes_cancel), color = ThemeRed, fontWeight = FontWeight.Bold)
+                        Text(stringResource(id = R.string.btn_yes_cancel), color = colors.accent, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showCancelDialog = false }) {
-                        Text(stringResource(id = R.string.btn_continue), color = inkSubtleColor)
+                        Text(stringResource(id = R.string.btn_continue), color = colors.textSecondary)
                     }
                 },
-                containerColor = PaperSurface
+                containerColor = colors.card,
+                titleContentColor = colors.textPrimary,
+                textContentColor = colors.textPrimary
             )
         }
     }
@@ -1528,11 +1276,11 @@ fun UnNestWorkbenchScreen(viewModel: UnNestViewModel) {
 // Screen 4: The Success and Audit Matrix Screen
 @Composable
 fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
+    val colors = UnNestTheme.colors
+    val context = LocalContext.current
     BackHandler {
         viewModel.navigateTo(AppScreen.Hub)
     }
-    val inkCharcoalColor = MaterialTheme.colorScheme.onBackground
-    val inkSubtleColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
     val stats by viewModel.sessionStats.collectAsStateWithLifecycle()
     val logs by viewModel.sessionLogs.collectAsStateWithLifecycle()
     val duplicatesCount by viewModel.duplicatesCount.collectAsStateWithLifecycle()
@@ -1553,7 +1301,7 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
             Text(
                 text = stringResource(id = R.string.title_execution_log_stats),
                 style = MaterialTheme.typography.headlineMedium,
-                color = inkCharcoalColor,
+                color = colors.textPrimary,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
@@ -1565,11 +1313,11 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                     .size(80.dp)
                     .drawBehind {
                         drawCircle(
-                            color = InkSageLight,
+                            color = colors.successTint,
                             radius = size.width / 2
                         )
                         drawCircle(
-                            color = InkSage,
+                            color = colors.success,
                             radius = (size.width / 2) - 6.dp.toPx(),
                             style = Stroke(width = 2.dp.toPx())
                         )
@@ -1579,7 +1327,7 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = stringResource(id = R.string.success_icon_description),
-                    tint = InkSage,
+                    tint = colors.success,
                     modifier = Modifier.size(34.dp)
                 )
             }
@@ -1590,7 +1338,7 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                 text = stringResource(id = R.string.status_success),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = inkCharcoalColor
+                color = colors.textPrimary
             )
 
             val copiedCount = stats?.filesProcessed ?: 0
@@ -1600,7 +1348,7 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                 text = stringResource(id = R.string.summary_copied_skipped, copiedCount, skippedCount),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
-                color = inkCharcoalColor
+                color = colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(14.dp))
@@ -1610,8 +1358,8 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                     .weight(1f)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(InkSageLight.copy(alpha = 0.45f))
-                    .border(1.5.dp, InkSage, RoundedCornerShape(12.dp))
+                    .background(colors.successTint)
+                    .border(1.5.dp, colors.success, RoundedCornerShape(12.dp))
                     .padding(12.dp)
             ) {
                 val logScroll = rememberScrollState()
@@ -1625,7 +1373,7 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                     text = logLinesText,
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = FontFamily.Monospace,
-                    color = InkSage,
+                    color = colors.success,
                     modifier = Modifier
                         .verticalScroll(logScroll)
                         .fillMaxSize()
@@ -1641,11 +1389,11 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                         elevation = 3.dp,
                         shape = RoundedCornerShape(12.dp),
                         clip = false,
-                        ambientColor = inkSubtleColor.copy(alpha = 0.25f),
-                        spotColor = inkSubtleColor.copy(alpha = 0.35f)
+                        ambientColor = colors.textSecondary.copy(alpha = 0.25f),
+                        spotColor = colors.textSecondary.copy(alpha = 0.35f)
                     )
-                    .background(PaperSurface, RoundedCornerShape(12.dp))
-                    .border(1.5.dp, PaperSurfaceDarker, RoundedCornerShape(12.dp))
+                    .background(colors.card, RoundedCornerShape(12.dp))
+                    .border(1.5.dp, colors.cardBorder, RoundedCornerShape(12.dp))
                     .padding(16.dp)
             ) {
                 Column {
@@ -1653,40 +1401,40 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                         text = stringResource(id = R.string.title_final_operation_stats),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = inkCharcoalColor,
+                        color = colors.textPrimary,
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
 
                     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(stringResource(id = R.string.label_total_files_processed), style = MaterialTheme.typography.bodyMedium, color = inkSubtleColor)
-                        Text("${stats?.filesProcessed ?: 0}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = inkCharcoalColor)
+                        Text(stringResource(id = R.string.label_total_files_processed), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+                        Text("${stats?.filesProcessed ?: 0}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                     }
-                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(inkCharcoalColor.copy(alpha = 0.05f)))
+                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(colors.ledgerLine))
 
                     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(stringResource(id = R.string.label_final_directory_size), style = MaterialTheme.typography.bodyMedium, color = inkSubtleColor)
+                        Text(stringResource(id = R.string.label_final_directory_size), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
                         val bytesVal = stats?.totalSize ?: 0L
-                        Text(viewModel.formatSize(bytesVal), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = inkCharcoalColor)
+                        Text(viewModel.formatSize(bytesVal), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                     }
-                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(inkCharcoalColor.copy(alpha = 0.05f)))
+                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(colors.ledgerLine))
 
                     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(stringResource(id = R.string.label_duplicates_renamed), style = MaterialTheme.typography.bodyMedium, color = inkSubtleColor)
-                        Text("$duplicatesCount", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = inkCharcoalColor)
+                        Text(stringResource(id = R.string.label_duplicates_renamed), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+                        Text("$duplicatesCount", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                     }
-                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(inkCharcoalColor.copy(alpha = 0.05f)))
+                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(colors.ledgerLine))
 
                     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(stringResource(id = R.string.label_conflicts_resolved), style = MaterialTheme.typography.bodyMedium, color = inkSubtleColor)
-                        Text("$resolvedConflicts", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = inkCharcoalColor)
+                        Text(stringResource(id = R.string.label_conflicts_resolved), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+                        Text("$resolvedConflicts", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                     }
-                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(inkCharcoalColor.copy(alpha = 0.05f)))
+                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(colors.ledgerLine))
 
                     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(stringResource(id = R.string.label_execution_time), style = MaterialTheme.typography.bodyMedium, color = inkSubtleColor)
+                        Text(stringResource(id = R.string.label_execution_time), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
                         val durationMs = stats?.elapsedMs ?: 0L
                         val secondsStr = String.format("%02dm %02ds", (durationMs / 1000) / 60, (durationMs / 1000) % 60)
-                        Text(secondsStr, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = InkSage)
+                        Text(secondsStr, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = colors.success)
                     }
                 }
             }
@@ -1701,11 +1449,11 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                             elevation = 2.dp,
                             shape = RoundedCornerShape(12.dp),
                             clip = false,
-                            ambientColor = InkRedWax.copy(alpha = 0.2f),
-                            spotColor = InkRedWax.copy(alpha = 0.3f)
+                            ambientColor = colors.error.copy(alpha = 0.2f),
+                            spotColor = colors.error.copy(alpha = 0.3f)
                         )
-                        .background(PaperSurface, RoundedCornerShape(12.dp))
-                        .border(1.5.dp, InkRedWaxLight, RoundedCornerShape(12.dp))
+                        .background(colors.card, RoundedCornerShape(12.dp))
+                        .border(1.5.dp, colors.errorTint, RoundedCornerShape(12.dp))
                         .padding(14.dp)
                 ) {
                     Column {
@@ -1720,13 +1468,13 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                                 text = stringResource(id = R.string.label_skipped_files, skippedCount),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = InkRedWax
+                                color = colors.error
                             )
                             Text(
                                 text = stringResource(id = if (isSkippedExpanded) R.string.btn_hide else R.string.btn_show_details),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Bold,
-                                color = InkRedWax
+                                color = colors.error
                             )
                         }
 
@@ -1744,19 +1492,19 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(6.dp))
-                                            .background(PaperSurfaceDarker.copy(alpha = 0.5f))
+                                            .background(colors.segmentTrack)
                                             .padding(8.dp)
                                     ) {
                                         Text(
                                             text = skipped.fileName,
                                             style = MaterialTheme.typography.bodySmall,
                                             fontWeight = FontWeight.Bold,
-                                            color = inkCharcoalColor
+                                            color = colors.textPrimary
                                         )
                                         Text(
                                             text = skipped.reason,
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = inkSubtleColor
+                                            color = colors.textSecondary
                                         )
                                     }
                                 }
@@ -1772,19 +1520,117 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // Open Folder and (in ZIP mode) Share ZIP action buttons
+                val destTree = stats?.destTreeUri
+                val isZip = viewModel.flattenMode.collectAsStateWithLifecycle().value == FlattenMode.ZIP
+                val zipUri = stats?.zipUri
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (destTree != null) {
+                        Button(
+                            onClick = {
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                                        setDataAndType(destTree, "resource/folder")
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    try {
+                                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                                            data = destTree
+                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        }
+                                        context.startActivity(intent)
+                                    } catch (e2: Exception) {
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.toast_cannot_open_folder),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                                .testTag("open_folder_button"),
+                            colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            FolderIcon(
+                                color = colors.onAccent,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(id = R.string.btn_open_folder),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.onAccent
+                            )
+                        }
+                    }
+
+                    if (isZip && zipUri != null) {
+                        Button(
+                            onClick = {
+                                try {
+                                    val intent = Intent(Intent.ACTION_SEND).apply {
+                                        type = "application/zip"
+                                        putExtra(Intent.EXTRA_STREAM, zipUri)
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(Intent.createChooser(intent, context.getString(R.string.btn_share_zip)))
+                                } catch (e: Exception) {
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.toast_cannot_share_zip),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                                .testTag("share_zip_button"),
+                            colors = ButtonDefaults.buttonColors(containerColor = colors.warning),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = null,
+                                tint = colors.onAccent,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(id = R.string.btn_share_zip),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.onAccent
+                            )
+                        }
+                    }
+                }
+
                 Button(
                     onClick = { viewModel.resetSession() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)
                         .testTag("new_session_button"),
-                    colors = ButtonDefaults.buttonColors(containerColor = ThemeRed),
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
                         text = stringResource(id = R.string.btn_start_another_session),
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = colors.onAccent
                     )
                 }
 
@@ -1794,8 +1640,8 @@ fun UnNestSuccessScreen(viewModel: UnNestViewModel) {
                         .fillMaxWidth()
                         .height(50.dp)
                         .testTag("exit_button"),
-                    border = BorderStroke(1.5.dp, inkCharcoalColor.copy(alpha = 0.15f)),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = inkCharcoalColor),
+                    border = BorderStroke(1.5.dp, colors.cardBorder),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.textPrimary),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
@@ -1817,22 +1663,25 @@ fun UnNestOptimizationAlertDialog(
     onConfirmExecution: () -> Unit
 ) {
     if (showDialog) {
+        val colors = UnNestTheme.colors
         AlertDialog(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = colors.card,
+            titleContentColor = colors.textPrimary,
+            textContentColor = colors.textPrimary,
             onDismissRequest = onDismissRequest,
             title = {
                 Text(
                     text = stringResource(id = R.string.title_massive_files),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = colors.textPrimary
                 )
             },
             text = {
                 Text(
                     text = stringResource(id = R.string.desc_massive_files, detectedHeavyFilesCount),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    color = colors.textSecondary,
                     textAlign = TextAlign.Justify
                 )
             },
@@ -1842,7 +1691,7 @@ fun UnNestOptimizationAlertDialog(
                         text = stringResource(id = R.string.btn_proceed),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = colors.accent
                     )
                 }
             },
@@ -1852,7 +1701,7 @@ fun UnNestOptimizationAlertDialog(
                         text = stringResource(id = R.string.btn_cancel),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = colors.textSecondary
                     )
                 }
             }
